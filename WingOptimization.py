@@ -1,4 +1,6 @@
-git #MachUp is a AeroModel libary 
+#Try using Target_Cl() to find AOA for a given CL
+
+#MachUp is a AeroModel libary 
 import machupX
 
 #To handle input files 
@@ -7,7 +9,7 @@ import json
 #To export data 
 import pandas 
 
-# for math
+#For acessing sign functions
 import math
 
 #Calculate wing forces over a airspeed range
@@ -136,7 +138,6 @@ if __name__=="__main__":
 
             #Update the Wing File 
             scene = machupX.Scene("Wings/Wing_Setup.json")
-            scene.export_stl()
 
             #Solve for forces (Airspeed Range (m/s), Weight (N), Tollerance)
             Forces = WingForces(scene, range(20, 100), 1000, 0.5)
