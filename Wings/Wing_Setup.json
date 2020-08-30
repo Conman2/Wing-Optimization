@@ -1,0 +1,36 @@
+{
+    "tag" : "Wing Test",
+    "run" : {
+        "display_wireframe" : {
+            "show_legend" : true
+        },
+        "solve_forces" : {
+            "non_dimensional" : false
+        },
+        "pitch_trim" : {
+            "set_state_to_trim" : false
+        },
+        "derivatives" : {}
+    },
+    "solver" : {
+        "type" : "linear"
+    },
+    "units" : "SI",
+    "scene" : {
+        "atmosphere" : {},
+        "aircraft" : {
+            "Wing" : {
+                "file" : "Wings/Wing.json",
+                "state" : {
+                    "velocity" : 0.0,
+                    "alpha" : 0.0,
+                    "beta" : 0.0
+                },
+                "control_state" : {
+                    "elevator" : 0.0,
+                    "aileron" : 0.0
+                }
+            }
+        }
+    }
+}
