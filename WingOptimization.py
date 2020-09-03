@@ -63,13 +63,13 @@ def WingForces(scene, airspeed, weight, tolerance):
     return data
 
 #Return chord distrabution for Bell lift distrabution (Zero Twist)  
-def BellDistrabution(span, root_chord, chordpoints):
+def BellDistrabution(root_chord, chordpoints):
 
     #For storing data
     chord_distrabution = []
 
     #For how many chord points are needed 
-    for i in range(0, chordpoints):
+    for i in range(0, chordpoints + 1):
 
         #Calculate chord position
         chord_position = (i / chordpoints)
@@ -84,13 +84,13 @@ def BellDistrabution(span, root_chord, chordpoints):
     return chord_distrabution
 
 #Returns Sweep Distrabution for Cresent Moon
-def CresentMoon(span, max_sweep, chordpoints):
+def CresentSweep(max_sweep, chordpoints):
  
     #For storing data
     sweep_distrabution = []
 
     #For how many chord points are needed 
-    for i in range(0, chordpoints):
+    for i in range(0, chordpoints + 1):
 
         #Calculate chord position
         chord_position = (i / chordpoints)
@@ -103,6 +103,28 @@ def CresentMoon(span, max_sweep, chordpoints):
 
     #Return the result
     return sweep_distrabution   
+
+#Wing dihedral angles 
+def CresentDihedral(max_dihedral, chordpoints):
+
+    #For storing data
+    dihedral_distrabution = []
+
+    #For how many chord points are needed 
+    for i in range(0, chordpoints + 1):
+
+        #Calculate chord position
+        chord_position = (i / chordpoints)
+        
+        #Calculate chord length
+        dihedral = (1 - (1 - (chord_position) ** 2) ** 0.5) * max_dihedral
+
+        #Record Results    
+        dihedral_distrabution.append([chord_position, dihedral])
+
+    #Return the result
+    return dihedral_distrabution      
+
 
 #Main Function
 if __name__=="__main__":
@@ -122,31 +144,32 @@ if __name__=="__main__":
     Writer = pandas.ExcelWriter('Results/Results.xlsx', engine='xlsxwriter')
 
     #Wing Profile Variance   
-    for semispan in range(3, 4, 1):
-        for sweep in range(20, 90, 10):
+    # for semispan in range(3, 4, 1):
+    #     for sweep in range(0, 90, 10):
 
-            #Change the wingspan
-            json_file["wings"]["main_wing"]["semispan"] = semispan 
+    #Change the wingspan
+    json_file["wings"]["main_wing"]["semispan"] = 3
 
-            #Change the Wing Chord 
-            json_file["wings"]["main_wing"]["chord"] = BellDistrabution(semispan * 2, 2 / semispan, 50)
-            #json_file["wings"]["main_wing"]["chord"] = ['elliptic', 2 / semispan]
-            json_file["wings"]["main_wing"]["sweep"] = CresentMoon(semispan, sweep, 50)
+    #Change the Wing Chord 
+    json_file["wings"]["main_wing"]["chord"] = BellDistrabution(2 / 3, 50)
+    #json_file["wings"]["main_wing"]["chord"] = ['elliptic', 2 / semispan]
+    json_file["wings"]["main_wing"]["sweep"] = CresentSweep(30, 50)
+    json_file["wings"]["main_wing"]["dihedral"] = CresentDihedral(30, 50)
 
-            #Update the JSON file 
-            json.dump(json_file, open('Wings/Wing.json', 'w'), indent = 4)
+    #Update the JSON file 
+    json.dump(json_file, open('Wings/Wing.json', 'w'), indent = 4)
 
-            #Update the Wing File 
-            scene = machupX.Scene("Wings/Wing_Setup.json")
+    #Update the Wing File 
+    scene = machupX.Scene("Wings/Wing_Setup.json")
 
-            #Solve for forces (Airspeed Range (m/s), Weight (N), Tollerance)
-            Forces = WingForces(scene, range(20, 100), 1000, 0.5)
+    #Solve for forces (Airspeed Range (m/s), Weight (N), Tollerance)
+    Forces = WingForces(scene, range(20, 100), 1000, 0.5)
 
-            #Change the Data to a DataFrame
-            DataFrame = pandas.DataFrame(Forces)
+    #Change the Data to a DataFrame
+    DataFrame = pandas.DataFrame(Forces)
 
-            #Write the Dataframe to a unique sheet
-            DataFrame.to_excel(Writer, sheet_name='Sweep = ' + str(sweep))
+    #Write the Dataframe to a unique sheet
+    DataFrame.to_excel(Writer, sheet_name='Sweep = ' + str(30))
 
     # Close the Pandas Excel writer and output the Excel file.
     Writer.save()       
